@@ -1,4 +1,4 @@
 <?php
 
-$_lang['commerce_splitit'] = 'Splitit';
-$_lang['commerce_splitit.description'] = 'A short description of what Splitit does.';
+$_lang['commerce_splitit'] = 'Commerce_SplitIt';
+$_lang['commerce_splitit.description'] = 'A short description of what Commerce_SplitIt does.';

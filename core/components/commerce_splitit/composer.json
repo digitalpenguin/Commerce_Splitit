@@ -4,7 +4,7 @@
     },
     "autoload": {
         "psr-4": {
-            "DigitalPenguin\\Splitit\\" : "src/"
+            "DigitalPenguin\\Commerce_SplitIt\\" : "src/"
         }
     }
 }

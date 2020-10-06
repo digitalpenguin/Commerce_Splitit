@@ -1,15 +1,16 @@
 <?php
-namespace DigitalPenguin\Splitit\Modules;
+namespace DigitalPenguin\Commerce_SplitIt\Modules;
 
 use modmore\Commerce\Admin\Configuration\About\ComposerPackages;
 use modmore\Commerce\Admin\Sections\SimpleSection;
 use modmore\Commerce\Events\Admin\PageEvent;
+use modmore\Commerce\Events\Gateways;
 use modmore\Commerce\Modules\BaseModule;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
-class Splitit extends BaseModule {
+class SplitIt extends BaseModule {
 
     public function getName()
     {
@@ -32,19 +33,26 @@ class Splitit extends BaseModule {
         // Load our lexicon
         $this->adapter->loadLexicon('commerce_splitit:default');
 
-        $this->adapter->log(1, 'Hello World! This is ' . __FILE__  . ' calling.');
-
-        // Add the xPDO package, so Commerce can detect the derivative classes
-//        $root = dirname(__DIR__, 2);
-//        $path = $root . '/model/';
-//        $this->adapter->loadPackage('commerce_splitit', $path);
-
         // Add template path to twig
-//        $root = dirname(__DIR__, 2);
-//        $this->commerce->view()->addTemplatesPath($root . '/templates/');
+        $root = dirname(__DIR__, 2);
+        $this->commerce->view()->addTemplatesPath($root . '/templates/');
 
         // Add composer libraries to the about section (v0.12+)
         $dispatcher->addListener(\Commerce::EVENT_DASHBOARD_LOAD_ABOUT, [$this, 'addLibrariesToAbout']);
+
+        // Register the gateway
+        //$dispatcher->addListener(\Commerce::EVENT_GET_PAYMENT_GATEWAYS, [$this, 'registerGateway']);
+    }
+
+    /**
+     * @param Gateways $event
+     */
+    public function registerGateway(Gateways $event)
+    {
+        // Add the GatewayName gateway, and log an error if the class couldn't be found.
+        if (!$event->addGateway(SplitItGateway::class, 'SplitIt')) {
+            $this->adapter->log(MODX_LOG_LEVEL_ERROR, 'Could not add the SplitIt gateway - the class was probably not found');
+        }
     }
 
     public function getModuleConfiguration(\comModule $module)
