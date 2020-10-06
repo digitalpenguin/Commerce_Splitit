@@ -105,7 +105,7 @@ include $componentPath . '/core/components/commerce_splitit/vendor/autoload.php'
 $modulePath = $componentPath . '/core/components/commerce_splitit/src/Modules/';
 
 // Instruct Commerce to load modules from our directory, providing the base namespace and module path twice
-$commerce->loadModulesFromDirectory($modulePath, 'ThirdParty\\Splitit\\Modules\\', $modulePath);
+$commerce->loadModulesFromDirectory($modulePath, 'DigitalPenguin\\Splitit\\Modules\\', $modulePath);
 
 // Clear the cache
 $modx->cacheManager->refresh();

@@ -1,5 +1,5 @@
 <?php
-namespace ThirdParty\Splitit\Modules;
+namespace DigitalPenguin\Splitit\Modules;
 
 use modmore\Commerce\Admin\Configuration\About\ComposerPackages;
 use modmore\Commerce\Admin\Sections\SimpleSection;
@@ -19,7 +19,7 @@ class Splitit extends BaseModule {
 
     public function getAuthor()
     {
-        return 'Your Name Here';
+        return 'Murray Wood';
     }
 
     public function getDescription()
@@ -31,6 +31,8 @@ class Splitit extends BaseModule {
     {
         // Load our lexicon
         $this->adapter->loadLexicon('commerce_splitit:default');
+
+        $this->adapter->log(1, 'Hello World! This is ' . __FILE__  . ' calling.');
 
         // Add the xPDO package, so Commerce can detect the derivative classes
 //        $root = dirname(__DIR__, 2);
