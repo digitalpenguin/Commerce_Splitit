@@ -9,8 +9,10 @@ use comTransaction;
 use modmore\Commerce\Admin\Widgets\Form\Field;
 use modmore\Commerce\Admin\Widgets\Form\PasswordField;
 use modmore\Commerce\Gateways\Exceptions\TransactionException;
+use modmore\Commerce\Gateways\Interfaces\GatewayInterface;
+use DigitalPenguin\Commerce_SplitIt\Gateways\Transactions\Order;
 
-class SplitIt implements \modmore\Commerce\Gateways\Interfaces\GatewayInterface {
+class SplitIt implements GatewayInterface {
     /** @var Commerce */
     protected $commerce;
 
@@ -40,7 +42,7 @@ class SplitIt implements \modmore\Commerce\Gateways\Interfaces\GatewayInterface 
      *
      * @param comTransaction $transaction
      * @param array $data
-     * @return TransactionInterface|RedirectTransactionInterface
+     * @return Order
      * @throws TransactionException
      */
     public function submit(comTransaction $transaction, array $data)
@@ -57,7 +59,7 @@ class SplitIt implements \modmore\Commerce\Gateways\Interfaces\GatewayInterface 
 
         // ManualTransaction is used by the Manual payment gateway and has an always-successful response;
         // useful for testing but not quite for actual payments.
-        return new \modmore\Commerce\Gateways\Manual\ManualTransaction($value);
+        return new Order($value);
     }
 
     /**
@@ -65,7 +67,7 @@ class SplitIt implements \modmore\Commerce\Gateways\Interfaces\GatewayInterface 
      *
      * @param comTransaction $transaction
      * @param array $data
-     * @return TransactionInterface|RedirectTransactionInterface
+     * @return Order
      * @throws TransactionException
      */
     public function returned(comTransaction $transaction, array $data)
@@ -73,7 +75,7 @@ class SplitIt implements \modmore\Commerce\Gateways\Interfaces\GatewayInterface 
         // called when the customer is viewing the payment page after a submit(); we can access stuff in the transaction
         $value = $transaction->getProperty('required_value');
 
-        return new \modmore\Commerce\Gateways\Manual\ManualTransaction($value);
+        return new Order($value);
     }
 
     /**

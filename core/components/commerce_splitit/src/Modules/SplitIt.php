@@ -41,7 +41,7 @@ class SplitIt extends BaseModule {
         $dispatcher->addListener(\Commerce::EVENT_DASHBOARD_LOAD_ABOUT, [$this, 'addLibrariesToAbout']);
 
         // Register the gateway
-        //$dispatcher->addListener(\Commerce::EVENT_GET_PAYMENT_GATEWAYS, [$this, 'registerGateway']);
+        $dispatcher->addListener(\Commerce::EVENT_GET_PAYMENT_GATEWAYS, [$this, 'registerGateway']);
     }
 
     /**
@@ -50,7 +50,7 @@ class SplitIt extends BaseModule {
     public function registerGateway(Gateways $event)
     {
         // Add the GatewayName gateway, and log an error if the class couldn't be found.
-        if (!$event->addGateway(SplitItGateway::class, 'SplitIt')) {
+        if (!$event->addGateway(SplitIt::class, 'SplitIt')) {
             $this->adapter->log(MODX_LOG_LEVEL_ERROR, 'Could not add the SplitIt gateway - the class was probably not found');
         }
     }
