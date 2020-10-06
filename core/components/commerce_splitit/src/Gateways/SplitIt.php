@@ -8,6 +8,7 @@ use comPaymentMethod;
 use comTransaction;
 use modmore\Commerce\Admin\Widgets\Form\Field;
 use modmore\Commerce\Admin\Widgets\Form\PasswordField;
+use modmore\Commerce\Admin\Widgets\Form\TExtField;
 use modmore\Commerce\Gateways\Exceptions\TransactionException;
 use modmore\Commerce\Gateways\Interfaces\GatewayInterface;
 use DigitalPenguin\Commerce_SplitIt\Gateways\Transactions\Order;
@@ -33,6 +34,9 @@ class SplitIt implements GatewayInterface {
      */
     public function view(comOrder $order)
     {
+        // Get a token from the SplitIt API to render with the card form
+
+
         // To render a template, use: $this->commerce->view()->render('frontend/gateways/foo.twig', []);
         return '<p>This may render a template that contains client-side code that needs to run for the gateway.</p>';
     }
@@ -89,11 +93,25 @@ class SplitIt implements GatewayInterface {
 
         $fields = [];
 
+        $fields[] = new TextField($this->commerce, [
+            'name' => 'properties[apiUsername]',
+            'label' => 'API Username',
+            'description' => 'Enter your SplitIt API username',
+            'value' => $method->getProperty('apiUsername'),
+        ]);
+
         $fields[] = new PasswordField($this->commerce, [
-            'name' => 'properties[apiKey]',
-            'label' => 'API Key',
-            'description' => 'Find the API Key at bla bla bla',
-            'value' => $method->getProperty('publicKey'),
+            'name' => 'properties[apiPassword]',
+            'label' => 'API Password',
+            'description' => 'Enter your SplitIt API password',
+            'value' => $method->getProperty('apiPassword'),
+        ]);
+
+        $fields[] = new PasswordField($this->commerce, [
+            'name' => 'properties[terminalApiKey]',
+            'label' => 'Payment Terminal API Key',
+            'description' => 'Enter the API Key for the payment gateway.',
+            'value' => $method->getProperty('terminalApiKey'),
         ]);
 
         return $fields;

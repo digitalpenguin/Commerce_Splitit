@@ -1,6 +1,7 @@
 {
     "require": {
-        "php": ">=7.1.0"
+        "php": ">=7.1.0",
+        "splitit/sdk": "^1.5"
     },
     "autoload": {
         "psr-4": {
