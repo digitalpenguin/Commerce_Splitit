@@ -13,9 +13,15 @@ use modmore\Commerce\Gateways\Exceptions\TransactionException;
 use modmore\Commerce\Gateways\Interfaces\GatewayInterface;
 use DigitalPenguin\Commerce_SplitIt\Gateways\Transactions\Order;
 
+// TODO: Build own client instead of using SDK. Otherwise may be conflicts between composer versions.
+use SplititSdkClient\Configuration;
+use SplititSdkClient\ObjectSerializer;
+use SplititSdkClient\FlexFields;
+
 class SplitIt implements GatewayInterface {
     /** @var Commerce */
     protected $commerce;
+    protected $adapter;
 
     /** @var comPaymentMethod */
     protected $method;
@@ -23,6 +29,7 @@ class SplitIt implements GatewayInterface {
     public function __construct(Commerce $commerce, comPaymentMethod $method)
     {
         $this->commerce = $commerce;
+        $this->adapter = $commerce->adapter;
         $this->method = $method;
     }
 
@@ -31,14 +38,46 @@ class SplitIt implements GatewayInterface {
      *
      * @param comOrder $order
      * @return string
+     * @throws \modmore\Commerce\Exceptions\ViewException
      */
     public function view(comOrder $order)
     {
+        // Load sandbox version if Commerce is in test mode.
+        $mode = 'production';
+        if($this->commerce->isTestMode()) {
+            $mode = 'sandbox';
+        }
+        $cssUrl = 'https://flex-fields.' . $mode . '.splitit.com/css/splitit.flex-fields.min.css?v='.round(microtime(true)/100);
+        $jsUrl = 'https://flex-fields.' . $mode . '.splitit.com/js/dist/splitit.flex-fields.sdk.js?v='.round(microtime(true)/100);
+
+        // Inject default Splitit CSS to page header unless system setting is set to false.
+        if($this->adapter->getOption('commerce_splitit.use_default_css')) {
+            $this->commerce->modx->regClientCSS($cssUrl);
+        }
+
         // Get a token from the SplitIt API to render with the card form
+        $token = $this->getToken();
 
+        return $this->commerce->view()->render('frontend/gateways/splitit.twig', [
+            'js_url'    =>  $jsUrl,
+            'token'     =>  $token,
+            'method'    =>  $this->method->get('id')
+        ]);
+    }
 
-        // To render a template, use: $this->commerce->view()->render('frontend/gateways/foo.twig', []);
-        return '<p>This may render a template that contains client-side code that needs to run for the gateway.</p>';
+    protected function getToken() {
+
+        Configuration::sandbox()->setApiKey('3b2163ea-fbbf-4f21-8d63-7fbe0c2239a4');
+        //Configuration::production()->setApiKey('_YOUR_PRODUCTION_API_KEY_');
+
+        try{
+            $ff = FlexFields::authenticate(Configuration::sandbox(), 'APIUser000031364', 'wO6DWp3H');
+            return $ff->getPublicToken(1000, "USD");
+        } catch(\Exception $e){
+            $this->adapter->log(MODX_LOG_LEVEL_ERROR,'Error authenticating with Splitit: '.$e->getMessage());
+            return '';
+        }
+
     }
 
     /**
@@ -51,12 +90,7 @@ class SplitIt implements GatewayInterface {
      */
     public function submit(comTransaction $transaction, array $data)
     {
-        // Validate the request
-        if (!array_key_exists('required_value', $data) || empty($data['required_value'])) {
-            throw new TransactionException('required_value is missing.');
-        }
-
-        $value = htmlentities($data['required_value'], ENT_QUOTES, 'UTF-8');
+        $value = 'This was a success';
 
         $transaction->setProperty('required_value', $value);
         $transaction->save();
@@ -108,10 +142,17 @@ class SplitIt implements GatewayInterface {
         ]);
 
         $fields[] = new PasswordField($this->commerce, [
-            'name' => 'properties[terminalApiKey]',
-            'label' => 'Payment Terminal API Key',
-            'description' => 'Enter the API Key for the payment gateway.',
-            'value' => $method->getProperty('terminalApiKey'),
+            'name' => 'properties[sandboxApiKey]',
+            'label' => 'Sandbox (Testing) API Key',
+            'description' => 'Enter the API Key for testing the payment gateway.',
+            'value' => $method->getProperty('sandboxApiKey'),
+        ]);
+
+        $fields[] = new PasswordField($this->commerce, [
+            'name' => 'properties[productionApiKey]',
+            'label' => 'Production (Live Payments) API Key',
+            'description' => 'Enter the API Key for the production payment gateway.',
+            'value' => $method->getProperty('productionApiKey'),
         ]);
 
         return $fields;

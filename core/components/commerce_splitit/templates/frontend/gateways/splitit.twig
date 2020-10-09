@@ -1,0 +1,89 @@
+<div id="splitit-container" class="splitit-default-ui grouped">
+    <div class="splitit-cc-group">
+        <div id="card-number"></div>
+        <div id="expiration-date"></div>
+        <div id="cvv"></div>
+        <div class="splitit-cc-group-separator"></div>
+    </div>
+
+    <div id="installment-picker"></div>
+    <div id="error-box"></div>
+    <div id="terms-conditions"></div>
+    <div style="display:none;" id="btn-pay"></div>
+</div>
+
+<script src="{{ js_url }}"></script>
+<script>
+    function initializeSplitit() {
+        var flexFields = Splitit.FlexFields.setup({
+            container: "#splitit-container",
+            publicToken: "{{ token }}",
+            fields: {
+                number: {
+                    selector: "#card-number"
+                },
+                cvv: {
+                    selector: "#cvv"
+                },
+                expirationDate: {
+                    selector: "#expiration-date"
+                }
+            },
+            installmentPicker: {
+                selector: "#installment-picker"
+            },
+            termsConditions: {
+                selector: "#terms-conditions"
+            },
+            errorBox: {
+                selector: "#error-box"
+            },
+            paymentButton: {
+                selector: "#btn-pay"
+            },
+            billingAddress: {
+                addressLine: "260 Madison Avenue.",
+                addressLine2: "Appartment 1",
+                city: "New York",
+                state: "NY",
+                country: "USA",
+                zip: "10016"
+            },
+            consumerData: {
+                fullName: "John Smith",
+                email: "JohnS@splitit.com",
+                phoneNumber: "1-844-775-4848",
+                cultureName: "en-us"
+            }
+        }).ready(function () {
+            // Splitit plugin ready, optionally do something here.
+            flexFields.show();
+        }).onSuccess(function (result) {
+            // Respond here if payment goes well.
+            alert('Payment was successful! Check console for result details.');
+            console.log(result);
+
+
+            var form = CommercePayments.getForm();
+            form.submit();
+        });
+    }
+
+    // Wait until the page has finished loading
+    CommercePayments.onReady(initializeSplitit());
+
+    // Listen for submit and hijack the event
+    CommercePayments.onSubmit({{ method }}, function (e) {
+        var form = CommercePayments.getForm();
+
+        // Make sure Splitit is the selected payment method at time of submit
+        if(form.querySelector('#payment-method-{{ method }}').checked) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Activate the hidden Splitit pay button when the main Commerce "Make Payment" button is pressed.
+            document.getElementById('btn-pay').click();
+        }
+
+    });
+</script>
