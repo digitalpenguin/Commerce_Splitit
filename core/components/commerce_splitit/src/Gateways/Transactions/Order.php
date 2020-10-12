@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPenguin\Commerce_SplitIt\Gateways\Transactions;
+namespace DigitalPenguin\Commerce_Splitit\Gateways\Transactions;
 
 use modmore\Commerce\Gateways\Interfaces\TransactionInterface;
 

@@ -1,5 +1,5 @@
 <?php
-namespace DigitalPenguin\Commerce_SplitIt\Modules;
+namespace DigitalPenguin\Commerce_Splitit\Modules;
 
 use modmore\Commerce\Admin\Configuration\About\ComposerPackages;
 use modmore\Commerce\Admin\Sections\SimpleSection;
@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
-class SplitIt extends BaseModule {
+class Splitit extends BaseModule {
 
     public function getName()
     {
@@ -49,7 +49,7 @@ class SplitIt extends BaseModule {
      */
     public function addGateway(Gateways $event)
     {
-        $event->addGateway(\DigitalPenguin\Commerce_SplitIt\Gateways\SplitIt::class, $this->adapter->lexicon('commerce_splitit.gateway'));
+        $event->addGateway(\DigitalPenguin\Commerce_Splitit\Gateways\Splitit::class, $this->adapter->lexicon('commerce_splitit.gateway'));
     }
 
     public function getModuleConfiguration(\comModule $module)

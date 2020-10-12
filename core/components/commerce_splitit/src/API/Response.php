@@ -1,6 +1,6 @@
 <?php
 
-namespace DigitalPenguin\Commerce_SplitIt\API;
+namespace DigitalPenguin\Commerce_Splitit\API;
 
 use Psr\Http\Message\ResponseInterface;
 

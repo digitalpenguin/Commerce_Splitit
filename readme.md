@@ -1,2 +1,2 @@
-SplitIt Payment Gateway Integration for Commerce on the MODX CMS.
+Splitit Payment Gateway Integration for Commerce on the MODX CMS.
 

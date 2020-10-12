@@ -42,18 +42,18 @@
                 selector: "#btn-pay"
             },
             billingAddress: {
-                addressLine: "260 Madison Avenue.",
-                addressLine2: "Appartment 1",
-                city: "New York",
-                state: "NY",
-                country: "USA",
-                zip: "10016"
+                addressLine: "{{ billing_address.AddressLine }}",
+                addressLine2: "{{ billing_address.AddressLine2 }}",
+                city: "{{ billing_address.City }}",
+                state: "{{ billing_address.State }}",
+                country: "{{ billing_address.Country }}",
+                zip: "{{ billing_address.Zip }}"
             },
             consumerData: {
-                fullName: "John Smith",
-                email: "JohnS@splitit.com",
-                phoneNumber: "1-844-775-4848",
-                cultureName: "en-us"
+                fullName: "{{ consumer_data.FullName }}",
+                email: "{{ consumer_data.Email }}",
+                phoneNumber: "{{ consumer_data.PhoneNumber }}",
+                cultureName: "{{ consumer_data.CultureName }}"
             }
         }).ready(function () {
             // Splitit plugin ready, optionally do something here.
@@ -63,9 +63,8 @@
             alert('Payment was successful! Check console for result details.');
             console.log(result);
 
-
             var form = CommercePayments.getForm();
-            form.submit();
+            //form.submit();
         });
     }
 
