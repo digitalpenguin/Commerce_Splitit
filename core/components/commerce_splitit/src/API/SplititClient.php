@@ -20,6 +20,13 @@ class SplititClient {
         ]);
     }
 
+    /**
+     * Creates an API request and actions it
+     * @param string $resource
+     * @param array $data
+     * @param string $method
+     * @return Response
+     */
     public function request(string $resource, array $data, string $method = 'POST'): Response
     {
         try {
@@ -34,6 +41,11 @@ class SplititClient {
         }
     }
 
+    /**
+     * Returns either sandbox or production endpoint depending on Commerce's test mode.
+     * @param bool $testMode
+     * @return string
+     */
     private function _getEndpoint(bool $testMode): string
     {
         return !$testMode ? 'https://web-api.splitit.com' : 'https://web-api-sandbox.splitit.com';

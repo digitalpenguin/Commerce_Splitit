@@ -56,15 +56,23 @@
                 cultureName: "{{ consumer_data.CultureName }}"
             }
         }).ready(function () {
-            // Splitit plugin ready, optionally do something here.
+            // Splitit plugin ready - display it.
             flexFields.show();
         }).onSuccess(function (result) {
             // Respond here if payment goes well.
-            alert('Payment was successful! Check console for result details.');
             console.log(result);
 
             var form = CommercePayments.getForm();
-            //form.submit();
+
+            // Add data to form
+            var input = document.createElement("input");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", "splitit_data");
+            input.setAttribute("value", JSON.stringify(result));
+            form.appendChild(input);
+
+            // Submit after adding the data
+            form.submit();
         });
     }
 

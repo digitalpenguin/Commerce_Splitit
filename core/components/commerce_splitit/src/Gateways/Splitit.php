@@ -102,7 +102,12 @@ class Splitit implements GatewayInterface {
             return false;
         }
 
-        $this->adapter->log(MODX_LOG_LEVEL_ERROR,$data['SessionId']);
+        if(!$data) return false;
+
+        // Save Splitit SessionId value to $_SESSION
+        $_SESSION['commerce_splitit']['session_id'] = $data['SessionId'];
+
+        //$this->adapter->log(MODX_LOG_LEVEL_ERROR,$data['SessionId']);
         return $data['SessionId'];
     }
 
@@ -112,13 +117,13 @@ class Splitit implements GatewayInterface {
      * @return array|false
      */
     protected function initiateInstallmentPlanRequest($sessionId,$order) {
-        $this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($order->toArray(),true));
+        //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($order->toArray(),true));
 
         $client = new SplititClient($this->commerce->isTestMode());
 
         $this->planData = [
             'Amount'    =>  [
-                'Value'         =>  $order->get('total')/100,
+                'Value'         =>  $order->get('total') / 100,
                 'CurrencyCode'  =>  $order->get('currency')
             ],
             'RefOrderNumber'    =>  $order->get('id'),
@@ -129,8 +134,6 @@ class Splitit implements GatewayInterface {
         if(!$address) {
             $address = $order->getAddress('shipping');
         }
-
-        //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($address,true));
 
         $this->billingAddress = [
             'AddressLine'   =>  $address->get('address1'),
@@ -160,7 +163,11 @@ class Splitit implements GatewayInterface {
                 'ConsumerData'      =>  $this->consumerData
             ]);
             $data = $response->getData();
-            $this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($data,true));
+
+            //Save installment plan number to session
+            $_SESSION['commerce_splitit']['installment_plan_number'] = $data['InstallmentPlan']['InstallmentPlanNumber'];
+
+            //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($data,true));
         } catch(\Exception $e){
             $this->adapter->log(MODX_LOG_LEVEL_ERROR,'Error initiating installment plan with Splitit: '.$e->getMessage());
             return false;
@@ -179,16 +186,45 @@ class Splitit implements GatewayInterface {
      */
     public function submit(comTransaction $transaction, array $data)
     {
-        $this->commerce->modx->log(1,print_r($data,true));
-        $value = 'This was a success';
+        //$this->commerce->modx->log(1,print_r($data,true));
+        //$this->commerce->modx->log(1,print_r(json_decode($data['splitit_data']),true));
 
-        $transaction->setProperty('required_value', $value);
-        $transaction->save();
+        $data['splitit_data'] = json_decode($data['splitit_data'],true);
 
-        // ManualTransaction is used by the Manual payment gateway and has an always-successful response;
-        // useful for testing but not quite for actual payments.
-        return new Order($value);
+        $order = $transaction->getOrder();
+
+
+
+        // Even though to reach this point the order should have been successful,
+        // we're not going to trust the front-end data and verify the payment with the API directly.
+        $client = new SplititClient($this->commerce->isTestMode());
+        $transactionValue = 'Payment not verified';
+        $isPaid = false;
+
+        $response = $client->request('/api/InstallmentPlan/Get/VerifyPayment?format=json',[
+            'RequestHeader' => [
+                'SessionId' =>  $_SESSION['commerce_splitit']['session_id'],
+            ],
+            'InstallmentPlanNumber' => $_SESSION['commerce_splitit']['installment_plan_number']
+        ]);
+
+        if($response->isSuccess()) {
+            $verifyData = $response->getData();
+            if ($verifyData['IsPaid']) {
+                $isPaid = true;
+                $transactionValue = 'Payment verified';
+            }
+            $transaction->setProperty('payment_verified', $transactionValue);
+            $transaction->setProperty('is_paid', $isPaid);
+            $transaction->save();
+            //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($data,true));
+        }
+        $this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($data,true));
+        $this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($response->getData(),true));
+
+        return new Order($order,$isPaid,$data,$response);
     }
+
 
     /**
      * Handle the customer returning to the shop, typically only called after returning from a redirect.
@@ -200,10 +236,13 @@ class Splitit implements GatewayInterface {
      */
     public function returned(comTransaction $transaction, array $data)
     {
-        // called when the customer is viewing the payment page after a submit(); we can access stuff in the transaction
-        $value = $transaction->getProperty('required_value');
+        //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($transaction->toArray(),true));
+        $order = $transaction->getOrder();
+        if(!empty($transaction->getProperty('is_paid'))) {
+            return new Order($order,true, $data);
+        }
 
-        return new Order($value);
+        return new Order($order,false, $data);
     }
 
     /**
