@@ -85,10 +85,7 @@ class Splitit implements GatewayInterface {
      * @return false|mixed
      */
     protected function authenticate() {
-        $loginClient = new SplititClient(
-            $this->commerce->isTestMode()
-        );
-
+        $loginClient = new SplititClient($this->commerce->isTestMode());
         try{
             $response = $loginClient->request('/api/Login?format=json',[
                 'UserName'  =>  $this->method->getProperty('apiUsername'),
@@ -149,7 +146,7 @@ class Splitit implements GatewayInterface {
             'FullName'      =>  $address->get('fullname'),
             'Email'         =>  $address->get('email'),
             'PhoneNumber'   =>  $address->get('phone'),
-            'CultureName'   =>  $this->commerce->adapter->getOption('cultureKey')
+            'CultureName'   =>  $this->adapter->getOption('cultureKey')
         ];
 
         try{
@@ -186,19 +183,14 @@ class Splitit implements GatewayInterface {
      */
     public function submit(comTransaction $transaction, array $data)
     {
-        //$this->commerce->modx->log(1,print_r($data,true));
-        //$this->commerce->modx->log(1,print_r(json_decode($data['splitit_data']),true));
-
         $data['splitit_data'] = json_decode($data['splitit_data'],true);
 
         $order = $transaction->getOrder();
 
-
-
         // Even though to reach this point the order should have been successful,
         // we're not going to trust the front-end data and verify the payment with the API directly.
         $client = new SplititClient($this->commerce->isTestMode());
-        $transactionValue = 'Payment not verified';
+        $transactionValue = $this->adapter->lexicon('commerce_splitit.payment_not_verified');
         $isPaid = false;
 
         $response = $client->request('/api/InstallmentPlan/Get/VerifyPayment?format=json',[
@@ -212,12 +204,11 @@ class Splitit implements GatewayInterface {
             $verifyData = $response->getData();
             if ($verifyData['IsPaid']) {
                 $isPaid = true;
-                $transactionValue = 'Payment verified';
+                $transactionValue = $this->adapter->lexicon('commerce_splitit.payment_verified');
             }
             $transaction->setProperty('payment_verified', $transactionValue);
             $transaction->setProperty('is_paid', $isPaid);
             $transaction->save();
-            //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($data,true));
         }
 
         return new Order($order,$isPaid,$data,$response);

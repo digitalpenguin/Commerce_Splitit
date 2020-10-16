@@ -54,15 +54,7 @@ class Splitit extends BaseModule {
 
     public function getModuleConfiguration(\comModule $module)
     {
-        $fields = [];
-
-        // A more detailed description to be shown in the module configuration. Note that the module description
-        // ({@see self:getDescription}) is automatically shown as well.
-//        $fields[] = new DescriptionField($this->commerce, [
-//            'description' => $this->adapter->lexicon('commerce_splitit.module_description'),
-//        ]);
-
-        return $fields;
+        return [];
     }
 
     public function addLibrariesToAbout(PageEvent $event)
