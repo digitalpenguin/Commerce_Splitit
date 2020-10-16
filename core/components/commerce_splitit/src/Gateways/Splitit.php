@@ -219,8 +219,6 @@ class Splitit implements GatewayInterface {
             $transaction->save();
             //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($data,true));
         }
-        $this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($data,true));
-        $this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($response->getData(),true));
 
         return new Order($order,$isPaid,$data,$response);
     }

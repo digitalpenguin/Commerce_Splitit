@@ -1,5 +1,4 @@
-Splitit for Commerce 0.1.0-pl
+Splitit for Commerce 1.0.0-beta1
 ---------------------------------
-Released on
-
-- First release
+Released on 16-10-2020
+- First beta release

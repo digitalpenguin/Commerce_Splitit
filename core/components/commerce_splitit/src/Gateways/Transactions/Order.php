@@ -143,10 +143,7 @@ class Order implements TransactionInterface
         if (array_key_exists('value', $planData['refundAmount'])) {
             $extra['splitit_refund_amount'] = $planData['refundAmount']['value'];
         }
-
-
         return $extra;
-
     }
 
     /**
