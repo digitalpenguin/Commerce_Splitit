@@ -24,7 +24,7 @@ if (!defined('MOREPROVIDER_BUILD')) {
     define('PKG_NAME', 'Commerce_Splitit');
     define('PKG_NAMESPACE', 'commerce_splitit');
     define('PKG_VERSION', '1.0.0');
-    define('PKG_RELEASE', 'beta1');
+    define('PKG_RELEASE', 'beta2');
 
     /* load modx */
     require_once dirname(__DIR__) . '/config.core.php';

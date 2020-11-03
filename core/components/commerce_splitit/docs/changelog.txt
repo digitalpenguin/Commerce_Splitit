@@ -1,4 +1,7 @@
-Splitit for Commerce 1.0.0-beta1
+Splitit for Commerce 1.0.0-beta2
 ---------------------------------
+Released on 03-11-2020
+- Added workaround for if ObfuscateEmail plugin is active. Splitit can't handle escaped email addresses.
+
 Released on 16-10-2020
 - First beta release
