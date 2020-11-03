@@ -9,53 +9,61 @@
     <div id="installment-picker"></div>
     <div id="error-box"></div>
     <div id="terms-conditions"></div>
-    <div style="display:none;" id="btn-pay"></div>
+    <div style="display:none;" id="commerce_splitit-btn-pay"></div>
 </div>
 
 <script src="{{ js_url }}"></script>
 <script>
-    function initializeSplitit() {
-        var flexFields = Splitit.FlexFields.setup({
-            container: "#splitit-container",
-            publicToken: "{{ token }}",
-            fields: {
-                number: {
-                    selector: "#card-number"
-                },
-                cvv: {
-                    selector: "#cvv"
-                },
-                expirationDate: {
-                    selector: "#expiration-date"
-                }
+    var properties = {
+        container: "#splitit-container",
+        publicToken: "{{ token }}",
+        fields: {
+            number: {
+                selector: "#card-number"
             },
-            installmentPicker: {
-                selector: "#installment-picker"
+            cvv: {
+                selector: "#cvv"
             },
-            termsConditions: {
-                selector: "#terms-conditions"
-            },
-            errorBox: {
-                selector: "#error-box"
-            },
-            paymentButton: {
-                selector: "#btn-pay"
-            },
-            billingAddress: {
-                addressLine: "{{ billing_address.AddressLine }}",
-                addressLine2: "{{ billing_address.AddressLine2 }}",
-                city: "{{ billing_address.City }}",
-                state: "{{ billing_address.State }}",
-                country: "{{ billing_address.Country }}",
-                zip: "{{ billing_address.Zip }}"
-            },
-            consumerData: {
-                fullName: "{{ consumer_data.FullName }}",
-                email: "{{ consumer_data.Email }}",
-                phoneNumber: "{{ consumer_data.PhoneNumber }}",
-                cultureName: "{{ consumer_data.CultureName }}"
+            expirationDate: {
+                selector: "#expiration-date"
             }
-        }).ready(function () {
+        },
+        installmentPicker: {
+            selector: "#installment-picker"
+        },
+        termsConditions: {
+            selector: "#terms-conditions"
+        },
+        errorBox: {
+            selector: "#error-box"
+        },
+        paymentButton: {
+            selector: "#commerce_splitit-btn-pay"
+        },
+        billingAddress: {
+            addressLine: "{{ billing_address.AddressLine }}",
+            addressLine2: "{{ billing_address.AddressLine2 }}",
+            city: "{{ billing_address.City }}",
+            state: "{{ billing_address.State }}",
+            country: "{{ billing_address.Country }}",
+            zip: "{{ billing_address.Zip }}"
+        },
+        consumerData: {
+            fullName: "{{ consumer_data.FullName }}",
+            email: "",
+            phoneNumber: "{{ consumer_data.PhoneNumber }}",
+            cultureName: "{{ consumer_data.CultureName }}"
+        }
+    };
+
+    var email = "{{ consumer_data.Email }}";
+    // Workaround for ObfuscatedEmail
+    var doc = new DOMParser().parseFromString(email, "text/html");
+    var parsedEmail = doc.documentElement.textContent;
+    properties.consumerData.email = parsedEmail;
+
+    function initializeSplitit() {
+        var flexFields = Splitit.FlexFields.setup(properties).ready(function () {
             // Splitit plugin ready - display it.
             flexFields.show();
         }).onSuccess(function (result) {
@@ -89,7 +97,7 @@
             e.stopPropagation();
 
             // Activate the hidden Splitit pay button when the main Commerce "Make Payment" button is pressed.
-            document.getElementById('btn-pay').click();
+            document.getElementById('commerce_splitit-btn-pay').click();
         }
 
     });

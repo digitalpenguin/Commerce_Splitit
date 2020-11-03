@@ -59,6 +59,10 @@ class Splitit implements GatewayInterface {
         // Get a token from the Splitit API to render with the card form
         $token = $this->getToken($order);
 
+        // Due to needing to unescape email address client side (when using ObfuscateEmail plugin) sanitize email here to be extra safe.
+        // Splitit's API can't handle an escaped email address.
+        $this->consumerData['Email'] = filter_var($this->consumerData['Email'],FILTER_SANITIZE_EMAIL);
+
         return $this->commerce->view()->render('frontend/gateways/splitit.twig', [
             'js_url'            =>  $jsUrl,
             'token'             =>  $token,
