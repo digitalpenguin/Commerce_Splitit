@@ -1,3 +1,9 @@
+Splitit for Commerce 1.0.0-pl
+---------------------------------
+Released on 12-11-2020
+- Added Splitit prefix to form element ids to ensure no conflicts with other active gateways.
+- First pl release.
+
 Splitit for Commerce 1.0.0-beta2
 ---------------------------------
 Released on 03-11-2020
