@@ -1,15 +1,15 @@
 <div id="splitit-container" class="splitit-default-ui grouped">
     <div class="splitit-cc-group">
-        <div id="card-number"></div>
-        <div id="expiration-date"></div>
-        <div id="cvv"></div>
+        <div id="splitit-card-number"></div>
+        <div id="splitit-expiration-date"></div>
+        <div id="splitit-cvv"></div>
         <div class="splitit-cc-group-separator"></div>
     </div>
 
-    <div id="installment-picker"></div>
-    <div id="error-box"></div>
-    <div id="terms-conditions"></div>
-    <div style="display:none;" id="commerce_splitit-btn-pay"></div>
+    <div id="splitit-installment-picker"></div>
+    <div id="splitit-error-box"></div>
+    <div id="splitit-terms-conditions"></div>
+    <div style="display:none;" id="splitit-btn-pay"></div>
 </div>
 
 <script src="{{ js_url }}"></script>
@@ -19,26 +19,26 @@
         publicToken: "{{ token }}",
         fields: {
             number: {
-                selector: "#card-number"
+                selector: "#splitit-card-number"
             },
             cvv: {
-                selector: "#cvv"
+                selector: "#splitit-cvv"
             },
             expirationDate: {
-                selector: "#expiration-date"
+                selector: "#splitit-expiration-date"
             }
         },
         installmentPicker: {
-            selector: "#installment-picker"
+            selector: "#splitit-installment-picker"
         },
         termsConditions: {
-            selector: "#terms-conditions"
+            selector: "#splitit-terms-conditions"
         },
         errorBox: {
-            selector: "#error-box"
+            selector: "#splitit-error-box"
         },
         paymentButton: {
-            selector: "#commerce_splitit-btn-pay"
+            selector: "#splitit-btn-pay"
         },
         billingAddress: {
             addressLine: "{{ billing_address.AddressLine }}",
@@ -97,7 +97,7 @@
             e.stopPropagation();
 
             // Activate the hidden Splitit pay button when the main Commerce "Make Payment" button is pressed.
-            document.getElementById('commerce_splitit-btn-pay').click();
+            document.getElementById('splitit-btn-pay').click();
         }
 
     });
