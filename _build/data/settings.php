@@ -5,4 +5,12 @@ return [
         'area' => 'site',
         'value' => 'Yes',
     ],
+    'first_installment_percentage' => [
+        'area' => 'site',
+        'value' => '',
+    ],
+    'num_of_installments' => [
+        'area' => 'site',
+        'value' => '',
+    ],
 ];

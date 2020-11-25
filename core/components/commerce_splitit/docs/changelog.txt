@@ -1,3 +1,12 @@
+Splitit for Commerce 1.1.0-pl
+---------------------------------
+Released on 25-11-2020
+- Added functionality to set the number of payment installments offered to customers.
+- Added functionality to set percentage of first payment amount.
+- New system setting: commerce_splitit.first_installment_percentage
+- New system setting: commerce_splitit.num_of_installments
+- Added new lexicon values
+
 Splitit for Commerce 1.0.0-pl
 ---------------------------------
 Released on 12-11-2020

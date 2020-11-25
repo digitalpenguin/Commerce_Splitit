@@ -25,3 +25,15 @@ After saving, you'll see a Splitit tab appears at the top of the window. Here yo
 Form Styling
 -
 Splitit provides its own CSS for the payment widget and this is enabled by default. If you would like to completely restyle it from scratch, you can disable the system setting under the Commerce_Splitit namespace `use_default_css`.
+
+Payment Wizard Configuration
+-
+*New in version 1.1.0-pl*
+
+Two new system settings are offered to allow you to configure the payment wizard. You can now set the number of installments the customer can pick from,
+as well as the percentage of the first installment.
+
+**System Settings**
+
+- commerce_splitit.first_installment_percentage - Value should be an integer or a float. Don't include the percentage symbol.
+- commerce_splitit.num_of_installments - Value should be a comma-separated list of integers. Example: `2,3,4,5,6`

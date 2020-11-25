@@ -26,6 +26,7 @@ class Splitit implements GatewayInterface {
     protected $billingAddress;
     protected $planData;
     protected $consumerData;
+    protected $paymentWizardData;
 
     public function __construct(Commerce $commerce, comPaymentMethod $method)
     {
@@ -118,18 +119,42 @@ class Splitit implements GatewayInterface {
      * @return array|false
      */
     protected function initiateInstallmentPlanRequest($sessionId,$order) {
-        //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($order->toArray(),true));
 
         $client = new SplititClient($this->commerce->isTestMode());
 
+        $total = $order->get('total') / 100;
+
         $this->planData = [
-            'Amount'    =>  [
-                'Value'         =>  $order->get('total') / 100,
-                'CurrencyCode'  =>  $order->get('currency')
+            'Amount'            =>  [
+                'Value'                     =>  $total,
+                'CurrencyCode'              =>  $order->get('currency')
             ],
-            'RefOrderNumber'    =>  $order->get('id'),
-            'AutoCapture'       =>  true
+            'RefOrderNumber'            =>  $order->get('id'),
+            'AutoCapture'               =>  true
         ];
+
+        $firstInstallmentPercentage = $this->commerce->adapter->getOption('commerce_splitit.first_installment_percentage');
+        $numOfInstallments = $this->commerce->adapter->getOption('commerce_splitit.num_of_installments');
+
+        // Sets first amount to be percentage of the total. This is specified by the system setting.
+        if(!empty($firstInstallmentPercentage)) {
+
+            // Formula for percentage
+            $firstAmount = ($firstInstallmentPercentage / 100) * $total;
+
+            // This only gets applied if system setting "commerce_splitit.first_installment_percentage" has a value.
+            $this->planData['FirstInstallmentAmount'] = [
+                'Value'         =>  $firstAmount,
+                'CurrencyCode'  =>  $order->get('currency')
+            ];
+        }
+
+        // If "commerce_splitit.num_of_installments" system setting has been specified, set that here.
+        if(!empty($numOfInstallments)) {
+            $this->paymentWizardData = [
+                'requestedNumberOfInstallments' => $numOfInstallments
+            ];
+        }
 
         $address = $order->getAddress('billing');
         if(!$address) {
@@ -161,7 +186,8 @@ class Splitit implements GatewayInterface {
                 ],
                 'PlanData'          =>  $this->planData,
                 'BillingAddress'    =>  $this->billingAddress,
-                'ConsumerData'      =>  $this->consumerData
+                'ConsumerData'      =>  $this->consumerData,
+                'PaymentWizardData' =>  $this->paymentWizardData
             ]);
             $data = $response->getData();
 
