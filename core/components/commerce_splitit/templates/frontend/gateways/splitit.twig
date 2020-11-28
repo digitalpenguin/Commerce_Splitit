@@ -50,17 +50,11 @@
         },
         consumerData: {
             fullName: "{{ consumer_data.FullName }}",
-            email: "",
+            email: "{{ consumer_data.Email }}",
             phoneNumber: "{{ consumer_data.PhoneNumber }}",
             cultureName: "{{ consumer_data.CultureName }}"
         }
     };
-
-    var email = "{{ consumer_data.Email }}";
-    // Workaround for ObfuscatedEmail
-    var doc = new DOMParser().parseFromString(email, "text/html");
-    var parsedEmail = doc.documentElement.textContent;
-    properties.consumerData.email = parsedEmail;
 
     function initializeSplitit() {
         var flexFields = Splitit.FlexFields.setup(properties).ready(function () {

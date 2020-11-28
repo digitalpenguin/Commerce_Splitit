@@ -1,3 +1,9 @@
+Splitit for Commerce 1.1.1-pl
+---------------------------------
+Released on 28-11-2020
+- Removed Obfuscate email workaround as no longer needed.
+- Fixed rounding bug which prevented Splitit form from loading sometimes when using "first_installment_percentage" system setting.
+
 Splitit for Commerce 1.1.0-pl
 ---------------------------------
 Released on 25-11-2020

@@ -60,10 +60,6 @@ class Splitit implements GatewayInterface {
         // Get a token from the Splitit API to render with the card form
         $token = $this->getToken($order);
 
-        // Due to needing to unescape email address client side (when using ObfuscateEmail plugin) sanitize email here to be extra safe.
-        // Splitit's API can't handle an escaped email address.
-        $this->consumerData['Email'] = filter_var($this->consumerData['Email'],FILTER_SANITIZE_EMAIL);
-
         return $this->commerce->view()->render('frontend/gateways/splitit.twig', [
             'js_url'            =>  $jsUrl,
             'token'             =>  $token,
@@ -96,7 +92,7 @@ class Splitit implements GatewayInterface {
                 'UserName'  =>  $this->method->getProperty('apiUsername'),
                 'Password'  =>  $this->method->getProperty('apiPassword'),
             ]);
-            //$this->adapter->log(MODX_LOG_LEVEL_ERROR,print_r($response->getData()));
+            //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($response->getData(),true));
             $data = $response->getData();
 
         } catch(\Exception $e){
@@ -141,6 +137,8 @@ class Splitit implements GatewayInterface {
 
             // Formula for percentage
             $firstAmount = ($firstInstallmentPercentage / 100) * $total;
+            // Round if more than two decimal places
+            $firstAmount = round($firstAmount, 2);
 
             // This only gets applied if system setting "commerce_splitit.first_installment_percentage" has a value.
             $this->planData['FirstInstallmentAmount'] = [
@@ -194,7 +192,7 @@ class Splitit implements GatewayInterface {
             //Save installment plan number to session
             $_SESSION['commerce_splitit']['installment_plan_number'] = $data['InstallmentPlan']['InstallmentPlanNumber'];
 
-            //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($data,true));
+            $this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($data,true));
         } catch(\Exception $e){
             $this->adapter->log(MODX_LOG_LEVEL_ERROR,'Error initiating installment plan with Splitit: '.$e->getMessage());
             return false;
