@@ -120,6 +120,9 @@ class Splitit implements GatewayInterface {
 
         $total = $order->get('total') / 100;
 
+        // Splitit will only accept "." as a decimal place so ensure locale settings have not done a switcheroo.
+        $total = str_replace(',','.',(string)$total);
+
         $this->planData = [
             'Amount'            =>  [
                 'Value'                     =>  $total,
@@ -192,7 +195,7 @@ class Splitit implements GatewayInterface {
             //Save installment plan number to session
             $_SESSION['commerce_splitit']['installment_plan_number'] = $data['InstallmentPlan']['InstallmentPlanNumber'];
 
-            $this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($data,true));
+            //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($data,true));
         } catch(\Exception $e){
             $this->adapter->log(MODX_LOG_LEVEL_ERROR,'Error initiating installment plan with Splitit: '.$e->getMessage());
             return false;
