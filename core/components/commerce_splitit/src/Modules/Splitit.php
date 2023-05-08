@@ -6,7 +6,7 @@ use modmore\Commerce\Admin\Sections\SimpleSection;
 use modmore\Commerce\Events\Admin\PageEvent;
 use modmore\Commerce\Events\Gateways;
 use modmore\Commerce\Modules\BaseModule;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use modmore\Commerce\Dispatcher\EventDispatcher;
 
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
@@ -49,7 +49,10 @@ class Splitit extends BaseModule {
      */
     public function addGateway(Gateways $event)
     {
-        $event->addGateway(\DigitalPenguin\Commerce_Splitit\Gateways\Splitit::class, $this->adapter->lexicon('commerce_splitit.gateway'));
+        $event->addGateway(
+            \DigitalPenguin\Commerce_Splitit\Gateways\Splitit::class,
+            $this->adapter->lexicon('commerce_splitit.gateway')
+        );
     }
 
     public function getModuleConfiguration(\comModule $module)
@@ -64,7 +67,8 @@ class Splitit extends BaseModule {
             $section = new SimpleSection($this->commerce);
             $section->addWidget(new ComposerPackages($this->commerce, [
                 'lockFile' => $lockFile,
-                'heading' => $this->adapter->lexicon('commerce.about.open_source_libraries') . ' - ' . $this->adapter->lexicon('commerce_splitit'),
+                'heading' => $this->adapter->lexicon('commerce.about.open_source_libraries')
+                    . ' - ' . $this->adapter->lexicon('commerce_splitit'),
                 'introduction' => '', // Could add information about how libraries are used, if you'd like
             ]));
 
