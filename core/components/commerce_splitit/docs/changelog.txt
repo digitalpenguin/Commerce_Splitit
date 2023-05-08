@@ -1,3 +1,11 @@
+Splitit for Commerce 1.1.3-pl
+---------------------------------
+Released on 08-08-2023
+
+- Refactor response handling due to change in Splitit API
+- Update module to use \modmore\Commerce\Dispatcher\EventDispatcher
+- Update requirements to Commerce 1.3 minimum
+
 Splitit for Commerce 1.1.2-pl
 ---------------------------------
 Released on 30-03-2020
