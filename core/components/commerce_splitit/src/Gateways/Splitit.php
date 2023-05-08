@@ -242,7 +242,7 @@ class Splitit implements GatewayInterface {
             $transaction->save();
         }
 
-        return new Order($order,$isPaid,$data,$response);
+        return new Order($order, $isPaid, $data, $response);
     }
 
 
@@ -258,7 +258,7 @@ class Splitit implements GatewayInterface {
     {
         //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($transaction->toArray(),true));
         $order = $transaction->getOrder();
-        if(!empty($transaction->getProperty('is_paid'))) {
+        if (!empty($transaction->getProperty('is_paid'))) {
             return new Order($order,true, $data);
         }
 

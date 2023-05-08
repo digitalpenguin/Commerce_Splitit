@@ -17,7 +17,7 @@ class Order implements TransactionInterface
         $this->orderId = $order->get('id');
         $this->isPaid = $isPaid;
         $this->orderData = $orderData;
-        if($verifyResponse instanceof Response) {
+        if ($verifyResponse instanceof Response) {
             $this->verifyData = $verifyResponse->getData();
         }
     }
@@ -111,38 +111,18 @@ class Order implements TransactionInterface
         if (array_key_exists('traceId', $this->orderData['splitit_data']['data']['responseHeader'])) {
             $extra['splitit_payment_trace_id'] = $this->orderData['splitit_data']['data']['responseHeader']['traceId'];
         }
-        if($this->verifyData) {
-            if (array_key_exists('traceId', $this->verifyData['responseHeader'])) {
-                $extra['splitit_verify_payment_trace_id'] = $this->verifyData['responseHeader']['traceId'];
+        if ($this->verifyData) {
+            if (array_key_exists('traceId', $this->verifyData['ResponseHeader'])) {
+                $extra['splitit_verify_payment_trace_id'] = $this->verifyData['ResponseHeader']['traceId'];
             }
         }
         if (array_key_exists('installmentPlanNumber', $planData)) {
             $extra['splitit_installment_plan_number'] = $planData['installmentPlanNumber'];
         }
-        if (array_key_exists('description', $planData['installmentPlanStatus'])) {
-            $extra['splitit_installment_plan_status'] = $planData['installmentPlanStatus']['description'];
+        if (array_key_exists('refOrderNumber', $planData)) {
+            $extra['splitit_ref_order_number'] = $planData['refOrderNumber'];
         }
-        if (array_key_exists('description', $planData['amount']['currency'])) {
-            $extra['splitit_currency'] = $planData['amount']['currency']['description'];
-        }
-        if (array_key_exists('value', $planData['amount'])) {
-            $extra['splitit_amount'] = $planData['amount']['value'];
-        }
-        if (array_key_exists('value', $planData['outstandingAmount'])) {
-            $extra['splitit_outstanding_amount'] = $planData['outstandingAmount']['value'];
-        }
-        if (array_key_exists('numberOfInstallments', $planData)) {
-            $extra['splitit_number_of_installments'] = $planData['numberOfInstallments'];
-        }
-        if (array_key_exists('numberOfProcessedInstallments', $planData)) {
-            $extra['splitit_number_of_processed_installments'] = $planData['numberOfProcessedInstallments'];
-        }
-        if (array_key_exists('value', $planData['originalAmount'])) {
-            $extra['splitit_original_amount'] = $planData['originalAmount']['value'];
-        }
-        if (array_key_exists('value', $planData['refundAmount'])) {
-            $extra['splitit_refund_amount'] = $planData['refundAmount']['value'];
-        }
+
         return $extra;
     }
 
