@@ -1,5 +1,4 @@
 <div id="splitit-container"></div>
-<script src="{{ js_url }}"></script>
 <script>
     function initializeSplitit() {
         window.Splitit.FlexForm.setup({
@@ -40,21 +39,42 @@
         });
     }
 
+    function splititEnableSubmitBtn(btn)
+    {
+        btn.disabled = false;
+        btn.style.visibility = 'visible';
+    }
+
+    function splititDisableSubmitBtn(btn)
+    {
+        btn.disabled = true;
+        btn.style.visibility = 'hidden';
+    }
+
     // Wait until the page has finished loading
-    CommercePayments.onReady(initializeSplitit());
-
-    // Listen for submit and hijack the event
-    CommercePayments.onSubmit({{ method }}, function (e) {
+    CommercePayments.onReady(function() {
         const form = CommercePayments.getForm();
-
-        // Make sure Splitit is the selected payment method at time of submit
-        if(form.querySelector('#payment-method-{{ method }}').checked) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            // Activate the hidden Splitit pay button when the main Commerce "Make Payment" button is pressed.
-            // document.getElementById('splitit-btn-pay').click();
+        const btn = document.querySelector('button[type=submit].c-primary-button');
+        const method = form.querySelector('#payment-method-{{ method }}');
+        const radios = form.querySelectorAll('input[type=radio].c-payment-method-radio');
+        if (method.checked) {
+            // Splitit widget has its own submit button that can't be disabled, so we disable and hide the commerce
+            // submit button here if the Splitit method is selected.
+            splititDisableSubmitBtn(btn);
         }
 
+        radios.forEach(function(radio) {
+            radio.addEventListener('change', function(e) {
+                if (e.target.checked && e.target === method) {
+                    splititDisableSubmitBtn(btn);
+                }
+                else {
+                    splititEnableSubmitBtn(btn);
+                }
+            });
+        });
+
+        // Show Splitit widget
+        initializeSplitit();
     });
 </script>

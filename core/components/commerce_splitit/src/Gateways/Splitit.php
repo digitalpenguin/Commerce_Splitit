@@ -46,11 +46,11 @@ class Splitit implements GatewayInterface {
         // Load sandbox version if Commerce is in test mode.
         $mode = $this->commerce->isTestMode() ? 'sandbox' : 'production';
         $jsUrl = 'https://flex-form.' . $mode . '.splitit.com/flex-form.js?v=' . round(microtime(true) / 100);
+        $this->commerce->modx->regClientStartupScript($jsUrl);
 
         // Get a token from the Splitit API to render with the card form
         $installmentPlanNumber = $this->getToken($order);
         return $this->commerce->view()->render('frontend/gateways/splitit.twig', [
-            'js_url'            =>  $jsUrl,
             'ipn'               =>  $installmentPlanNumber,
             'method'            =>  $this->method->get('id'),
             'billing_address'   =>  $this->billingAddress,
