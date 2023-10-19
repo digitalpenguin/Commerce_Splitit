@@ -27,7 +27,7 @@ class Order implements TransactionInterface
      *
      * @return bool
      */
-    public function isPaid()
+    public function isPaid(): bool
     {
         return $this->isPaid;
     }
@@ -44,12 +44,12 @@ class Order implements TransactionInterface
      *
      * @return bool
      */
-    public function isAwaitingConfirmation()
+    public function isAwaitingConfirmation(): bool
     {
         return false;
     }
 
-    public function isRedirect()
+    public function isRedirect(): bool
     {
         return false;
     }
@@ -60,7 +60,7 @@ class Order implements TransactionInterface
      * @return bool
      * @see TransactionInterface::getExtraInformation()
      */
-    public function isFailed()
+    public function isFailed(): bool
     {
         return false;
     }
@@ -71,7 +71,7 @@ class Order implements TransactionInterface
      *
      * @return bool
      */
-    public function isCancelled()
+    public function isCancelled(): bool
     {
         return false;
     }
@@ -81,7 +81,7 @@ class Order implements TransactionInterface
      *
      * @return string
      */
-    public function getErrorMessage()
+    public function getErrorMessage(): string
     {
         return '';
     }
@@ -91,7 +91,7 @@ class Order implements TransactionInterface
      *
      * @return string
      */
-    public function getPaymentReference()
+    public function getPaymentReference(): string
     {
         return $this->orderId;
     }
@@ -102,25 +102,18 @@ class Order implements TransactionInterface
      *
      * @return array
      */
-    public function getExtraInformation()
+    public function getExtraInformation(): array
     {
-        $planData = $this->orderData['splitit_data']['data']['installmentPlan'];
+        if (empty($this->orderData)) {
+            return [];
+        }
+
+        $planData = $this->orderData['splitit_data'];
 
         $extra = [];
 
-        if (array_key_exists('traceId', $this->orderData['splitit_data']['data']['responseHeader'])) {
-            $extra['splitit_payment_trace_id'] = $this->orderData['splitit_data']['data']['responseHeader']['traceId'];
-        }
-        if ($this->verifyData) {
-            if (array_key_exists('traceId', $this->verifyData['ResponseHeader'])) {
-                $extra['splitit_verify_payment_trace_id'] = $this->verifyData['ResponseHeader']['traceId'];
-            }
-        }
-        if (array_key_exists('installmentPlanNumber', $planData)) {
-            $extra['splitit_installment_plan_number'] = $planData['installmentPlanNumber'];
-        }
-        if (array_key_exists('refOrderNumber', $planData)) {
-            $extra['splitit_ref_order_number'] = $planData['refOrderNumber'];
+        if (array_key_exists('ipn', $planData)) {
+            $extra['splitit_installment_plan_number'] = $planData['ipn'];
         }
 
         return $extra;
@@ -131,7 +124,7 @@ class Order implements TransactionInterface
      *
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->orderData;
     }

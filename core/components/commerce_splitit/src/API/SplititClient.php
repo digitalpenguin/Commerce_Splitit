@@ -6,17 +6,26 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class SplititClient {
 
-    /** @var Client */
-    private $client;
+    /** @var ?Client */
+    private ?Client $client;
+    private bool $authMode = false;
 
-    public function __construct(bool $testMode = true)
+    public function __construct(bool $testMode = true, bool $authMode = false, string $accessToken = '')
     {
+        $this->authMode = $authMode;
+
+        // Authorization request requires a different "Content-Type" header to all other requests.
+        $headers = $this->authMode
+            ? ['Content-Type' => 'application/x-www-form-urlencoded']
+            : [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' . $accessToken,
+            ];
+
         $this->client = new Client([
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'base_uri' => $this->_getEndpoint($testMode),
-            'http_errors' => false,
+            'headers' => $headers,
+            'base_uri' => $this->getEndpoint($testMode),
         ]);
     }
 
@@ -29,12 +38,24 @@ class SplititClient {
      */
     public function request(string $resource, array $data, string $method = 'POST'): Response
     {
+        // For authorization requests, data needs to be sent as "form_params".
+        $type = $this->authMode ? 'form_params' : 'json';
+
+        $payload = [
+            $type => $data,
+//            'debug' => true,
+        ];
+        if (!empty($data['headers'])) {
+            $payload['headers'] = [
+                $data['headers'],
+            ];
+        }
+
         try {
-            $response = $this->client->request($method, $resource, [
-                'json' => $data,
-            ]);
+            $response = $this->client->request($method, $resource, $payload);
             return Response::from($response);
-        } catch (GuzzleException $e) {
+        }
+        catch (GuzzleException $e) {
             $errorResponse = new Response(false, 0);
             $errorResponse->addError(get_class($e), $e->getMessage());
             return $errorResponse;
@@ -46,8 +67,12 @@ class SplititClient {
      * @param bool $testMode
      * @return string
      */
-    private function _getEndpoint(bool $testMode): string
+    private function getEndpoint(bool $testMode): string
     {
-        return !$testMode ? 'https://web-api.splitit.com' : 'https://web-api-sandbox.splitit.com';
+        $type = $testMode ? 'sandbox' : 'production';
+
+        return $this->authMode
+            ? "https://id.$type.splitit.com/"
+            : "https://web-api-v3.$type.splitit.com/";
     }
 }
