@@ -9,6 +9,10 @@ return [
         'area' => 'site',
         'value' => '',
     ],
+    'num_of_installments_default' => [
+        'area' => 'site',
+        'value' => '',
+    ],
     'locale' => [
         'area' => 'site',
         'value' => '',

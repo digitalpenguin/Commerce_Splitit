@@ -10,7 +10,9 @@ $_lang['commerce_splitit.payment_not_verified'] = 'Payment not verified';
 $_lang['setting_commerce_splitit.first_installment_percentage'] = 'First Installment Amount';
 $_lang['setting_commerce_splitit.first_installment_percentage_desc'] = 'Enter a number (integer or float) to use as a percentage. (Exclude the % symbol)';
 $_lang['setting_commerce_splitit.num_of_installments'] = 'Number of Installments';
-$_lang['setting_commerce_splitit.num_of_installments_desc'] = 'Set the number of installments you would like to offer customers.';
+$_lang['setting_commerce_splitit.num_of_installments_desc'] = 'Set the number of installments you would like to offer customers. This should be a comma-separated list of the number of installments allows. e.g. 2,3,4,5,6 - note that 2 is the minimum (that is one initial payment and one follow up payment).';
+$_lang['setting_commerce_splitit.num_of_installments_default'] = 'Number of Installments - Default';
+$_lang['setting_commerce_splitit.num_of_installments_default_desc'] = 'The number you set here will be the installment option that is pre-selected when the Splitit form loads during checkout.';
 $_lang['setting_commerce_splitit.locale'] = 'Splitit Locale';
 $_lang['setting_commerce_splitit.locale_desc'] = 'Set a locale for Splitit to use. e.g. en-US or fr-FR. If no value is found, the core locale system setting will be used instead. Default is en-US. If you have more than one language, add this setting to each of your contexts with a different value in each.';
 

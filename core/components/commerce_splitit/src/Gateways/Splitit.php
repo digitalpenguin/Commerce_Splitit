@@ -140,8 +140,8 @@ class Splitit implements GatewayInterface {
             'PurchaseMethod' => 'Ecommerce',
         ];
 
-        // If "commerce_splitit.num_of_installments" system setting has been specified, set that here.
-        $numOfInstallments = $this->commerce->adapter->getOption('commerce_splitit.num_of_installments');
+        // If "commerce_splitit.num_of_installments.default" system setting has been specified, set that here.
+        $numOfInstallments = $this->commerce->adapter->getOption('commerce_splitit.num_of_installments.default');
         if (!empty($numOfInstallments)) {
             $this->planData['NumberOfInstallments'] = $numOfInstallments;
         }
@@ -196,6 +196,14 @@ class Splitit implements GatewayInterface {
                 'Succeeded' => GatewayHelper::getReturnUrl($transaction),
                 'Failed' => GatewayHelper::getReturnUrl($transaction),
                 'Canceled' => GatewayHelper::getCancelUrl($transaction),
+            ];
+        }
+
+        // Here we expect a comma-separated list of numbers that sets what payment options are shown
+        $instOptions = $this->adapter->getOption('commerce_splitit.num_of_installments');
+        if (!empty($instOptions)) {
+            $requestParams['UxSettings'] = [
+                'DisplayedInstallmentOptions' => explode(',', $instOptions),
             ];
         }
 
