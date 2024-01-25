@@ -1,3 +1,13 @@
+Splitit for Commerce 2.1.0-pl
+---------------------------------
+Released on 25-01-2024
+
+- Add 3D Secure option to payment method options
+- Remove defunct use_default_css system setting
+- Make first_installment_percentage and num_of_installments settings work properly again
+- Add num_of_installments_default setting
+- Various minor improvements
+
 Splitit for Commerce 2.0.0-pl
 ---------------------------------
 Released on 19-10-2023

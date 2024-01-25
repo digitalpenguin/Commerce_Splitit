@@ -23,7 +23,7 @@ if (!defined('MOREPROVIDER_BUILD')) {
     /* define version */
     define('PKG_NAME', 'Commerce_Splitit');
     define('PKG_NAMESPACE', 'commerce_splitit');
-    define('PKG_VERSION', '2.0.0');
+    define('PKG_VERSION', '2.1.0');
     define('PKG_RELEASE', 'pl');
 
     /* load modx */
