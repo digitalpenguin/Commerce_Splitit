@@ -1,8 +1,8 @@
 <?php
 /* Get the core config */
 $componentPath = dirname(__DIR__);
-if (!file_exists($componentPath.'/config.core.php')) {
-    die('ERROR: missing '.$componentPath.'/config.core.php file defining the MODX core path.');
+if (!file_exists($componentPath . '/config.core.php')) {
+    die('ERROR: missing ' . $componentPath . '/config.core.php file defining the MODX core path.');
 }
 
 echo "<pre>";
@@ -13,57 +13,56 @@ require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 $modx = new modX();
 echo "Initializing manager...\n";
 $modx->initialize('mgr');
-$modx->getService('error','error.modError', '', '');
+$modx->getService('error', 'error.modError', '', '');
 $modx->setLogTarget('HTML');
 
 
-
 /* Namespace */
-if (!createObject('modNamespace',array(
+if (!createObject('modNamespace', [
     'name' => 'commerce_splitit',
-    'path' => $componentPath.'/core/components/commerce_splitit/',
-    'assets_path' => $componentPath.'/assets/components/commerce_splitit/',
-),'name', false)) {
+    'path' => $componentPath . '/core/components/commerce_splitit/',
+    'assets_path' => $componentPath . '/assets/components/commerce_splitit/',
+], 'name', false)) {
     echo "Error creating namespace commerce_splitit.\n";
 }
 
 /* Path settings */
-if (!createObject('modSystemSetting', array(
+if (!createObject('modSystemSetting', [
     'key' => 'commerce_splitit.core_path',
-    'value' => $componentPath.'/core/components/commerce_splitit/',
+    'value' => $componentPath . '/core/components/commerce_splitit/',
     'xtype' => 'textfield',
     'namespace' => 'commerce_splitit',
     'area' => 'Paths',
     'editedon' => time(),
-), 'key', false)) {
+], 'key', false)) {
     echo "Error creating commerce_splitit.core_path setting.\n";
 }
 
-if (!createObject('modSystemSetting', array(
+if (!createObject('modSystemSetting', [
     'key' => 'commerce_splitit.assets_path',
-    'value' => $componentPath.'/assets/components/commerce_splitit/',
+    'value' => $componentPath . '/assets/components/commerce_splitit/',
     'xtype' => 'textfield',
     'namespace' => 'commerce_splitit',
     'area' => 'Paths',
     'editedon' => time(),
-), 'key', false)) {
+], 'key', false)) {
     echo "Error creating commerce_splitit.assets_path setting.\n";
 }
 
 /* Fetch assets url */
 $requestUri = $_SERVER['REQUEST_URI'] ?: __DIR__ . '/_bootstrap/index.php';
 $bootstrapPos = strpos($requestUri, '_bootstrap/');
-$requestUri = rtrim(substr($requestUri, 0, $bootstrapPos), '/').'/';
+$requestUri = rtrim(substr($requestUri, 0, $bootstrapPos), '/') . '/';
 $assetsUrl = "{$requestUri}assets/components/commerce_splitit/";
 
-if (!createObject('modSystemSetting', array(
+if (!createObject('modSystemSetting', [
     'key' => 'commerce_splitit.assets_url',
     'value' => $assetsUrl,
     'xtype' => 'textfield',
     'namespace' => 'commerce_splitit',
     'area' => 'Paths',
     'editedon' => time(),
-), 'key', false)) {
+], 'key', false)) {
     echo "Error creating commerce_splitit.assets_url setting.\n";
 }
 
@@ -77,15 +76,15 @@ foreach ($settings as $key => $opts) {
     elseif (is_bool($val)) $xtype = 'modx-combo-boolean';
     else $xtype = 'textfield';
 
-    if (!createObject('modSystemSetting', array(
+    if (!createObject('modSystemSetting', [
         'key' => 'commerce_splitit.' . $key,
         'value' => $opts['value'],
         'xtype' => $xtype,
         'namespace' => 'commerce_splitit',
         'area' => $opts['area'],
         'editedon' => time(),
-    ), 'key', false)) {
-        echo "Error creating commerce_splitit.".$key." setting.\n";
+    ], 'key', false)) {
+        echo "Error creating commerce_splitit." . $key . " setting.\n";
     }
 }
 
@@ -122,7 +121,8 @@ echo "Done.";
  * @param bool $update
  * @return bool
  */
-function createObject ($className = '', array $data = array(), $primaryField = '', $update = true) {
+function createObject($className = '', array $data = [], $primaryField = '', $update = true)
+{
     global $modx;
     /* @var xPDOObject $object */
     $object = null;
@@ -130,13 +130,12 @@ function createObject ($className = '', array $data = array(), $primaryField = '
     /* Attempt to get the existing object */
     if (!empty($primaryField)) {
         if (is_array($primaryField)) {
-            $condition = array();
+            $condition = [];
             foreach ($primaryField as $key) {
                 $condition[$key] = $data[$key];
             }
-        }
-        else {
-            $condition = array($primaryField => $data[$primaryField]);
+        } else {
+            $condition = [$primaryField => $data[$primaryField]];
         }
         $object = $modx->getObject($className, $condition);
         if ($object instanceof $className) {
