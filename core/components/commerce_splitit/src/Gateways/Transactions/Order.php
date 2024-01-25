@@ -93,7 +93,12 @@ class Order implements TransactionInterface
      */
     public function getPaymentReference(): string
     {
-        return $this->orderId;
+        if (empty($this->orderData)) {
+            return 'Reference number missing';
+        }
+        $planData = $this->orderData['splitit_data'];
+
+        return $planData['ipn'];
     }
 
     /**

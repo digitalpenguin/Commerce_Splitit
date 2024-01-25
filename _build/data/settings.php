@@ -13,4 +13,8 @@ return [
         'area' => 'site',
         'value' => '',
     ],
+    'locale' => [
+        'area' => 'site',
+        'value' => '',
+    ],
 ];

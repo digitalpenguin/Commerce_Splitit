@@ -1,15 +1,21 @@
+<style>
+    #splitit-container .spt-btn {
+        /*display: none;*/
+    }
+</style>
 <div id="splitit-container"></div>
 <script>
     function initializeSplitit() {
-        window.Splitit.FlexForm.setup({
-            showOnReady: true,
-            // hidePicker: true,
+        return window.Splitit.FlexForm.setup({
+            // showOnReady: true,
             container: 'splitit-container',
             ipn: "{{ ipn }}",
             culture: "{{ consumer_data.CultureName }}",
-            numberOfInstallments: 3,
+            {% if number_of_installments > 0 %}
+            numberOfInstallments: {{ number_of_installments }},
+            {% endif %}
             billingAddress: {
-                addressLine: "{{ billing_address.AddressLine }}",
+                addressLine1: "{{ billing_address.AddressLine1 }}",
                 addressLine2: "{{ billing_address.AddressLine2 }}",
                 city: "{{ billing_address.City }}",
                 state: "{{ billing_address.State }}",
@@ -20,7 +26,7 @@
                 fullName: "{{ consumer_data.FullName }}",
                 email: "{{ consumer_data.Email }}",
                 phoneNumber: "{{ consumer_data.PhoneNumber }}",
-                cultureName: "{{ consumer_data.CultureName }}"
+                cultureName: "{{ consumer_data.CultureName|lower }}",
             },
             onSuccess: function(result) {
                 // Add data to form
@@ -36,6 +42,9 @@
                 form.submit();
             }
 
+        }).ready(e => {
+            console.debug('Splitit form initialized.');
+            console.debug(e);
         });
     }
 
@@ -57,24 +66,29 @@
         const btn = document.querySelector('button[type=submit].c-primary-button');
         const method = form.querySelector('#payment-method-{{ method }}');
         const radios = form.querySelectorAll('input[type=radio].c-payment-method-radio');
+
+        // Show Splitit widget
+        const splitit = initializeSplitit(method);
+
         if (method.checked) {
             // Splitit widget has its own submit button that can't be disabled, so we disable and hide the commerce
             // submit button here if the Splitit method is selected.
+            splitit.show();
             splititDisableSubmitBtn(btn);
         }
 
         radios.forEach(function(radio) {
             radio.addEventListener('change', function(e) {
                 if (e.target.checked && e.target === method) {
+                    splitit.show();
                     splititDisableSubmitBtn(btn);
                 }
                 else {
+                    splitit.hide();
                     splititEnableSubmitBtn(btn);
                 }
             });
         });
 
-        // Show Splitit widget
-        initializeSplitit();
     });
 </script>

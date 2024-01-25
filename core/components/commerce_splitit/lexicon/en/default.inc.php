@@ -10,6 +10,10 @@ $_lang['commerce_splitit.payment_not_verified'] = 'Payment not verified';
 $_lang['setting_commerce_splitit.first_installment_percentage'] = 'First Installment Amount';
 $_lang['setting_commerce_splitit.first_installment_percentage_desc'] = 'Enter a number (integer or float) to use as a percentage. (Exclude the % symbol)';
 $_lang['setting_commerce_splitit.num_of_installments'] = 'Number of Installments';
-$_lang['setting_commerce_splitit.num_of_installments_desc'] = 'Set the number of installments you would like to offer customers. The value should be comma-separated without spaces. For example: 2,3,4,5,6';
+$_lang['setting_commerce_splitit.num_of_installments_desc'] = 'Set the number of installments you would like to offer customers.';
 $_lang['setting_commerce_splitit.use_default_css'] = 'Use Default CSS';
-$_lang['setting_commerce_splitit.use_default_css_desc'] = 'Splitit CSS is included by default on the checkout page. Set this to "No" to remove it and style from scratch.';
+
+// Transaction lexicons
+$_lang['commerce.payment_verified'] = 'Payment Verified';
+$_lang['commerce.is_paid'] = 'Is Paid';
+$_lang['commerce.splitit_installment_plan_number'] = 'Splitit Installment Plan Number';

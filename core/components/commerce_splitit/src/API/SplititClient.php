@@ -16,11 +16,15 @@ class SplititClient {
 
         // Authorization request requires a different "Content-Type" header to all other requests.
         $headers = $this->authMode
-            ? ['Content-Type' => 'application/x-www-form-urlencoded']
+            ? [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ]
             : [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' . $accessToken,
+                'X-Splitit-TestMode' => $testMode,
+//                'X-Splitit-IdempotencyKey' => 'testkey',
             ];
 
         $this->client = new Client([
@@ -57,7 +61,7 @@ class SplititClient {
         }
         catch (GuzzleException $e) {
             $errorResponse = new Response(false, 0);
-            $errorResponse->addError(get_class($e), $e->getMessage());
+            $errorResponse->addError(get_class($e), $e->getResponse()->getBody()->getContents());
             return $errorResponse;
         }
     }
