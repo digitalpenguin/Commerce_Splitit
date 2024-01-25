@@ -38,7 +38,14 @@ class Splitit implements GatewayInterface {
     }
 
     /**
-     * Render the payment gateway for the customer; this may show issuers or a card form, for example.
+     * Most of the work for Splitit needs to occur here in the view method.
+     * 1. Authenticate with the API
+     * 2. If 3DSecure is being used, create a draft transaction, so we can get a transaction id to send to Splitit
+     * 3. Initiate an installment plan via the API (send all order data) and get an IPN
+     * 4. Configure the hosted fields widget with the IPN and order data
+     *
+     * When the widget submit button is pressed, it will send everything directly to Splitit.
+     * On the Commerce end (see submit() below) we then just verify the installment plan was created successfully.
      *
      * @param comOrder $order
      * @return string
@@ -106,7 +113,7 @@ class Splitit implements GatewayInterface {
             return false;
         }
 
-        // Save Splitit SessionId value to $_SESSION
+        // Save Splitit access_token value to $_SESSION
         $_SESSION['commerce_splitit']['access_token'] = $data['access_token'];
 
         return $data['access_token'];
@@ -203,12 +210,11 @@ class Splitit implements GatewayInterface {
         }
 
         $data = $response->getData();
-        $this->commerce->modx->log(MODX_LOG_LEVEL_ERROR, print_r($response,true));
+        $this->commerce->modx->log(MODX_LOG_LEVEL_DEBUG, print_r($response,true));
 
         // Save installment plan number to session
-        if (!$transaction) {
-            $_SESSION['commerce_splitit']['installment_plan_number'] = $data['InstallmentPlanNumber'];
-        }
+        $_SESSION['commerce_splitit']['installment_plan_number'] = $data['InstallmentPlanNumber'];
+
 
         return $data['InstallmentPlanNumber'];
     }
@@ -261,7 +267,6 @@ class Splitit implements GatewayInterface {
      */
     public function returned(comTransaction $transaction, array $data): Order
     {
-        //$this->commerce->modx->log(MODX_LOG_LEVEL_ERROR,print_r($transaction->toArray(),true));
         $order = $transaction->getOrder();
         if (!empty($transaction->getProperty('is_paid'))) {
             return new Order($order,true, $data);
