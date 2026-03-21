@@ -1,3 +1,10 @@
+Splitit for Commerce 2.2.0-pl
+---------------------------------
+Released on TBD
+
+- Automatically detect Commerce's AcceptTerms module and gate the Splitit widget until terms are accepted
+- Show a notice message when Splitit is selected but terms have not been accepted yet
+
 Splitit for Commerce 2.1.0-pl
 ---------------------------------
 Released on 25-01-2024
