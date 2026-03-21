@@ -17,6 +17,7 @@ $_lang['setting_commerce_splitit.locale'] = 'Splitit Locale';
 $_lang['setting_commerce_splitit.locale_desc'] = 'Set a locale for Splitit to use. e.g. en-US or fr-FR. If no value is found, the core locale system setting will be used instead. Default is en-US. If you have more than one language, add this setting to each of your contexts with a different value in each.';
 
 $_lang['commerce_splitit.accept_terms_first'] = 'Please accept the terms and conditions before paying with Splitit.';
+$_lang['commerce_splitit.gateway_error'] = 'The Splitit payment method is temporarily unavailable. Please choose a different payment method or try again later.';
 
 // Transaction lexicons
 $_lang['commerce.payment_verified'] = 'Payment Verified';

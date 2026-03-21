@@ -4,6 +4,7 @@ Released on TBD
 
 - Automatically detect Commerce's AcceptTerms module and gate the Splitit widget until terms are accepted
 - Show a notice message when Splitit is selected but terms have not been accepted yet
+- Show a user-friendly error instead of a JS exception when Splitit API authentication fails
 
 Splitit for Commerce 2.1.0-pl
 ---------------------------------
