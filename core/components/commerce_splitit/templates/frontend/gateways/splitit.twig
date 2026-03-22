@@ -2,8 +2,30 @@
     #splitit-container .spt-btn {
         /*display: none;*/
     }
+    #splitit-terms-notice {
+        display: none;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.75rem;
+        background: #fff8e1;
+        border: 1px solid #f0c040;
+        border-radius: 4px;
+        color: #555;
+    }
+    #splitit-error {
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.75rem;
+        background: #fdecea;
+        border: 1px solid #f5c6cb;
+        border-radius: 4px;
+        color: #721c24;
+    }
 </style>
+<div id="splitit-terms-notice"></div>
+{% if ipn %}
 <div id="splitit-container"></div>
+{% else %}
+<div id="splitit-error">{{ lex("commerce_splitit.gateway_error") }}</div>
+{% endif %}
 <script>
     function initializeSplitit() {
         return window.Splitit.FlexForm.setup({
@@ -29,10 +51,17 @@
                 cultureName: "{{ consumer_data.CultureName|lower }}",
             },
             onSuccess: function(result) {
-                // Add data to form
-                const form = CommercePayments.getForm(),
-                    input = document.createElement("input");
+                var form = CommercePayments.getForm();
 
+                // If Commerce's AcceptTerms module is active, verify terms are accepted before submitting
+                var acceptTermsCheckbox = form.querySelector('input[name="accept_terms"]');
+                if (acceptTermsCheckbox && !acceptTermsCheckbox.checked) {
+                    showSplititTermsNotice();
+                    return;
+                }
+
+                // Add data to form
+                var input = document.createElement("input");
                 input.setAttribute("type", "hidden");
                 input.setAttribute("name", "splitit_data");
                 input.setAttribute("value", JSON.stringify(result));
@@ -60,35 +89,95 @@
         btn.style.visibility = 'hidden';
     }
 
+    function showSplititTermsNotice() {
+        var notice = document.getElementById('splitit-terms-notice');
+        if (notice) {
+            notice.textContent = '{{ lex("commerce_splitit.accept_terms_first") }}';
+            notice.style.display = 'block';
+        }
+    }
+
+    function hideSplititTermsNotice() {
+        var notice = document.getElementById('splitit-terms-notice');
+        if (notice) {
+            notice.style.display = 'none';
+        }
+    }
+
     // Wait until the page has finished loading
     CommercePayments.onReady(function() {
-        const form = CommercePayments.getForm();
-        const btn = document.querySelector('button[type=submit].c-primary-button');
-        const method = form.querySelector('#payment-method-{{ method }}');
-        const radios = form.querySelectorAll('input[type=radio].c-payment-method-radio');
+        var form = CommercePayments.getForm();
+        var btn = document.querySelector('button[type=submit].c-primary-button');
+        var method = form.querySelector('#payment-method-{{ method }}');
+        var radios = form.querySelectorAll('input[type=radio].c-payment-method-radio');
+        var acceptTermsCheckbox = form.querySelector('input[name="accept_terms"]');
 
-        // Show Splitit widget
-        const splitit = initializeSplitit(method);
+        {% if ipn %}
+        var splitit = initializeSplitit();
+
+        /**
+         * Check if the AcceptTerms checkbox exists and is checked.
+         * Returns true when no checkbox is present (module not active).
+         */
+        function termsAccepted() {
+            return !acceptTermsCheckbox || acceptTermsCheckbox.checked;
+        }
+
+        /**
+         * Shows or hides the Splitit widget based on selected payment method
+         * and accept terms checkbox state.
+         */
+        function updateSplititVisibility() {
+            if (method.checked) {
+                splititDisableSubmitBtn(btn);
+                if (termsAccepted()) {
+                    splitit.show();
+                    hideSplititTermsNotice();
+                } else {
+                    splitit.hide();
+                    showSplititTermsNotice();
+                }
+            } else {
+                splitit.hide();
+                hideSplititTermsNotice();
+                splititEnableSubmitBtn(btn);
+            }
+        }
 
         if (method.checked) {
-            // Splitit widget has its own submit button that can't be disabled, so we disable and hide the commerce
-            // submit button here if the Splitit method is selected.
-            splitit.show();
+            updateSplititVisibility();
+        }
+
+        radios.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                updateSplititVisibility();
+            });
+        });
+
+        if (acceptTermsCheckbox) {
+            acceptTermsCheckbox.addEventListener('change', function() {
+                if (method.checked) {
+                    updateSplititVisibility();
+                }
+            });
+        }
+        {% else %}
+        // IPN is missing -- Splitit API authentication or plan initiation failed.
+        // Disable the submit button when this method is selected so the customer
+        // cannot attempt to pay with a broken gateway.
+        if (method.checked) {
             splititDisableSubmitBtn(btn);
         }
 
         radios.forEach(function(radio) {
             radio.addEventListener('change', function(e) {
                 if (e.target.checked && e.target === method) {
-                    splitit.show();
                     splititDisableSubmitBtn(btn);
-                }
-                else {
-                    splitit.hide();
+                } else {
                     splititEnableSubmitBtn(btn);
                 }
             });
         });
-
+        {% endif %}
     });
 </script>
